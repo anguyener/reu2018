@@ -6,9 +6,23 @@ import face_detection as fd
 
 path = os.getcwd()
 oldDir = os.path.join(path, 'Research_Datasets\Radbound')
-
 newDir = os.path.join(path, 'RadboundConverted')
+
+'''
+#Testing face detection with JAFFE dataset
+oldDir = os.path.join(path, 'Research_Datasets\jaffe')
+newDir = os.path.join(path, 'JAFFEConverted')
+'''
 os.mkdir(newDir)
+
+#load cascade classifier training file for haarcascade
+#Either need to find or make model for side-face detection in generalized/Radbound datasets
+haar_face_cascade = cv2.CascadeClassifier('data/haarcascade_frontalface_default.xml')
+
+def squarePicFaceDetected(image):
+    face_img = fd.crop_faces(haar_face_cascade, image)
+    resized = cv2.resize(face_img, (48, 48), interpolation = cv2.INTER_AREA)
+    return resized
 
 #crops image to a square crops half the difference off wider axis
 def squarePic(image):
@@ -21,6 +35,27 @@ def squarePic(image):
         cropped = image[difference:(height-difference), 0:width]
 
     return cropped
+
+#makes new name for converted image with emotion as a number
+def newNameFromJaffe(name, number):
+    num = str(number)
+    if name.find('AN') > -1:
+        return 'img-'+num+'-0.jpg'
+    elif name.find('DI') > -1:
+        return 'img-'+num+'-1.jpg'
+    elif name.find('FE') > -1:
+        return 'img-'+num+'-2.jpg'
+    elif name.find('HA') > -1:
+        return 'img-'+num+'-3.jpg'
+    elif name.find('SA') > -1:
+        return 'img-'+num+'-4.jpg'
+    elif name.find('SU') > -1:
+        return 'img-'+num+'-5.jpg'
+    elif name.find('NE') > -1:
+        return 'img-'+num+'-6.jpg'
+    else:
+        #what do we do if it's not one of the 6 basic emotions?
+        return 'skip-'+num+'.jpg'
 
 #makes new name for converted image with emotion as a number
 def newName(name, number):
@@ -73,8 +108,13 @@ def processImages(img_dir, new_dir):
         resized = cv2.resize(squarePic(img), (48, 48), interpolation = cv2.INTER_AREA)
         #not sure what 3rd param does...
 
+        #resized= squarePicFaceDetected(img)
+
         #os.rename(img, newName(img_path, numPic)) #should this be img or img_path??
         new_name = newName(img_path, numPic)
+
+        #new_name = newNameFromJaffe(img_path, numPic)
+
         cv2.imwrite(os.path.join(new_dir, new_name), resized)
         if numPic% 100 == 0:
             print (str((numPic/8040.0)*100)+'%')
