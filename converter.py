@@ -2,13 +2,21 @@
 import os
 import cv2
 import csv
+import face_detection as fd
 
-oldDir = '..\Research_Datasets\Radbound'
+#oldDir = '..\Research_Datasets\Radbound'
+oldDir = '..\Research_Datasets\jaffe'
 path = os.getcwd()
-newDir = os.path.join(path, 'RadboundConverted')
-os.mkdir(newDir)
+#newDir = os.path.join(path, 'RadboundConverted')
+newDir = os.path.join(path, 'JAFFEConverted')
+#os.mkdir(newDir) #causes error when directory already exists
 #copytree(DSdir, newDir)
 numPic = 0
+
+#load cascade classifier training file for haarcascade
+#Either need to find or make model for side-face detection in Radbound dataset
+haar_face_cascade = cv2.CascadeClassifier('data/haarcascade_frontalface_default.xml')
+
 
 #loop for processing images
 for img_path in os.listdir(oldDir):
@@ -16,11 +24,16 @@ for img_path in os.listdir(oldDir):
     img = cv2.imread(os.path.join(oldDir, img_path), -1) #-1 is imread_unchanged
     #warning: even if image path is wrong, no error will be thrown
 
-    resized = cv2.resize(squarePic(img), (48, 48), interpolation = cv2.INTER_AREA)
+    #crops square image of face from image
+    face_img = fd.crop_faces(haar_face_cascade, img)
+
+    #resized = cv2.resize(squarePic(img), (48, 48), interpolation = cv2.INTER_AREA)
+    resized = cv2.resize(face_img, (48, 48), interpolation = cv2.INTER_AREA)
     #not sure what 3rd param does...
 
     #os.rename(img, newName(img_path, numPic)) #should this be img or img_path??
-    cv2.imwrite(os.path.join(newdir, newName), resized)
+    #cv2.imwrite(os.path.join(newDir, newName), resized)
+    cv2.imwrite(os.path.join(newDir, str(numPic) + '.jpg'), resized) #for testing
 
 #creates csv
 with open('RadboundConverted.csv', 'wb') as csvfile:
@@ -33,7 +46,7 @@ with open('RadboundConverted.csv', 'wb') as csvfile:
         filewriter.writerow([emoNum(img_path), img_pixels])
 
 #crops image to a square crops half the difference off wider axis
-def squarePic(image): 
+def squarePic(image):
     height, width = img.shape #height then width because numpy
     difference = (height - width)/2
 
