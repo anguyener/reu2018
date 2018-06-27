@@ -4,17 +4,18 @@ import cv2
 import csv
 import face_detection as fd
 
+dataset = 'JAFFE'
 path = os.getcwd()
-oldDir = os.path.join(path, 'Research_Datasets\Radbound')
-newDir = os.path.join(path, 'RadboundConverted')
 
+if dataset == 'Radbound':
+    oldDir = os.path.join(path, 'Research_Datasets\Radbound')
+    newDir = os.path.join(path, 'RadboundConverted')
 
-#Testing face detection with JAFFE dataset
-oldDir = os.path.join(path, 'Research_Datasets\jaffe')
-newDir = os.path.join(path, 'JAFFEConverted')
+if dataset == 'JAFFE':
+    oldDir = os.path.join(path, 'Research_Datasets\jaffe')
+    newDir = os.path.join(path, 'JAFFEConverted')
 
 os.mkdir(newDir)
-
 
 def squarePicFaceDetected(image):
     face_img = fd.crop_faces(image)
@@ -95,23 +96,22 @@ def emoNum(name):
         return -1 #this will probably cause mistakes later...
 
 #crops images to equal width and height, resizes to 48x48 renames, puts in new directory
-def processImages(img_dir, new_dir):
+def processImages(img_dir, new_dir, dataset):
     numPic = 0
     for img_path in os.listdir(img_dir):
         numPic+=1
         img = cv2.imread(os.path.join(img_dir, img_path), -1) #-1 is imread_unchanged
         #warning: even if image path is wrong, no error will be thrown
+        if dataset == 'Radbound':
+            resized = cv2.resize(squarePic(img), (48, 48), interpolation = cv2.INTER_AREA)
+            new_name = newName(img_path, numPic)
+            #not sure what 3rd param does...
 
-        #resized = cv2.resize(squarePic(img), (48, 48), interpolation = cv2.INTER_AREA)
-        #not sure what 3rd param does...
-
-        resized= squarePicFaceDetected(img)
+        if dataset == 'JAFFE':
+            resized= squarePicFaceDetected(img)
+            new_name = newNameFromJaffe(img_path, numPic)
 
         #os.rename(img, newName(img_path, numPic)) #should this be img or img_path??
-        #new_name = newName(img_path, numPic)
-
-        new_name = newNameFromJaffe(img_path, numPic)
-
         cv2.imwrite(os.path.join(new_dir, new_name), resized)
         if numPic% 100 == 0:
             print (str((numPic/8040.0)*100)+'%')
@@ -126,5 +126,5 @@ def createCSV(name, categories, img_dir):
             img_pixels = ' '.join(map(str,img.flatten().tolist()))
             filewriter.writerow([emoNum(img_path), img_pixels])
 
-processImages(oldDir, newDir)
-createCSV('RadboundConverted.csv', ['emotion', 'pixels'], newDir)
+processImages(oldDir, newDir, dataset)
+createCSV(dataset + 'Converted.csv', ['emotion', 'pixels'], newDir)
