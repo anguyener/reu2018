@@ -143,9 +143,9 @@ def processCK():
             img = cv2.imread(img_file, cv2.IMREAD_GRAYSCALE)
             face_crop = squarePicFaceDetected(img)
 
-            cv2.imwrite(os.path.join('output', new_name), face_crop)
-            if img_num % 10 == 0:
-                print('processing ' + new_name + '...')
+            cv2.imwrite(os.path.join('CK+Converted', new_name), face_crop)
+            if img_num % 20 == 0:
+                print('processing...')
 
 #crops images to equal width and height, resizes to 48x48 renames, puts in new directory
 def processImages(img_dir, new_dir, dataset):
