@@ -38,22 +38,42 @@ def squarePic(image):
 def newNameFromJaffe(name, number):
     num = str(number)
     if name.find('AN') > -1:
-        return 'img-'+num+'-0.jpg'
+        return 'img-'+num+'-0.png'
     elif name.find('DI') > -1:
-        return 'img-'+num+'-1.jpg'
+        return 'img-'+num+'-1.png'
     elif name.find('FE') > -1:
-        return 'img-'+num+'-2.jpg'
+        return 'img-'+num+'-2.png'
     elif name.find('HA') > -1:
-        return 'img-'+num+'-3.jpg'
+        return 'img-'+num+'-3.png'
     elif name.find('SA') > -1:
-        return 'img-'+num+'-4.jpg'
+        return 'img-'+num+'-4.png'
     elif name.find('SU') > -1:
-        return 'img-'+num+'-5.jpg'
+        return 'img-'+num+'-5.png'
     elif name.find('NE') > -1:
-        return 'img-'+num+'-6.jpg'
+        return 'img-'+num+'-6.png'
     else:
         #what do we do if it's not one of the 6 basic emotions?
-        return 'skip-'+num+'.jpg'
+        return 'skip-'+num+'.png'
+
+def newNameFromCK(emotion_label, number):
+    num = str(number)
+    if emotion_label == 1: #anger
+        return 'img-'+num+'-0.png'
+    elif emotion_label == 3: #disgust
+        return 'img-'+num+'-1.png'
+    elif emotion_label == 4: #fear
+        return 'img-'+num+'-2.png'
+    elif emotion_label == 5: #happy
+        return 'img-'+num+'-3.png'
+    elif emotion_label == 6: # sadness
+        return 'img-'+num+'-4.png'
+    elif emotion_label == 7: #surprise
+        return 'img-'+num+'-5.png'
+    elif emotion_label == 0: #neutral
+        return 'img-'+num+'-6.png'
+    else:
+        #what do we do if it's not one of the 6 basic emotions? (contempt)
+        return 'skip-'+num+'.png'
 
 #makes new name for converted image with emotion as a number
 def newName(name, number):
@@ -80,7 +100,7 @@ def newName(name, number):
 def emoNum(name):
     if name.find('skip') > -1:
         return -1
-    elif name.find('0.') > -1: 
+    elif name.find('0.') > -1:
         return 0
     elif name.find('1.') > -1:
         return 1
@@ -98,12 +118,35 @@ def emoNum(name):
         return -1
 
 def processCK():
-    for root, dirs, files in os.walk('Research_Datasets\CK+\Emotion_labels'):
+    img_num = 0
+    for root, dirs, files in os.walk('Research_Datasets\CK+\Emotion_labels\Emotion'):
         for file in files:
-            file_path = root + '\\' + file
+            img_num += 1
+            #Isolate directory structure for emotion label
+            file_path = os.path.join(root, file)
+            dir_list = root.split(os.sep)
+            exp_id = '\\'.join(dir_list[4:])
+
+            #Get image file path
+            img_root = 'Research_Datasets\CK+\extended-cohn-kanade-images\cohn-kanade-images'
+            img_path = os.path.join(img_root, exp_id)
+            (file_name, extension) = os.path.splitext(file)
+            img_filename = file_name[:17] + '.png'
+            img_file = os.path.join(img_path, img_filename)
+
+            #Get emotion label
             f = open(file_path, 'r')
             emotion_num = int(float(f.read().strip(' ')))
-            #image = cvt.imread()
+            new_name = newNameFromCK(emotion_num, img_num)
+
+            #Process image
+            img = cv2.imread(img_file, cv2.IMREAD_GRAYSCALE)
+            face_crop = squarePicFaceDetected(img)
+
+            cv2.imwrite(os.path.join('output', new_name), face_crop)
+            if img_num % 10 == 0:
+                print('processing ' + new_name + '...')
+
 #crops images to equal width and height, resizes to 48x48 renames, puts in new directory
 def processImages(img_dir, new_dir, dataset):
     numPic = 0
@@ -115,7 +158,7 @@ def processImages(img_dir, new_dir, dataset):
             resized = cv2.resize(squarePic(img), (48, 48), interpolation = cv2.INTER_AREA)
             #not sure what 3rd param does...
             new_name = newName(img_path, numPic)
-            
+
 
         if dataset == 'JAFFE':
             resized= squarePicFaceDetected(img)
@@ -123,8 +166,8 @@ def processImages(img_dir, new_dir, dataset):
 
         #os.rename(img, newName(img_path, numPic)) #should this be img or img_path??
         cv2.imwrite(os.path.join(new_dir, new_name), resized)
-        if numPic% 100 == 0:
-            print str('%.2f' % ((numPic/8040.0)*100))+'%',
+        #if numPic% 100 == 0:
+        #    print str('%.2f' % ((numPic/8040.0)*100))+'%')
 
 def createCSV(name, categories, img_dir):
     with open(name, 'wb') as csvfile:
