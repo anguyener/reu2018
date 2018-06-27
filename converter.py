@@ -78,7 +78,9 @@ def newName(name, number):
 
 #scans image name for emotion number (last number before extention) returns it as int
 def emoNum(name):
-    if name.find('0.') > -1: #does the '.' need an escape character?
+    if name.find('skip') > -1:
+        return -1
+    elif name.find('0.') > -1: 
         return 0
     elif name.find('1.') > -1:
         return 1
@@ -93,19 +95,20 @@ def emoNum(name):
     elif name.find('6.') > -1:
         return 6
     else:
-        return -1 #this will probably cause mistakes later...
+        return -1
 
 #crops images to equal width and height, resizes to 48x48 renames, puts in new directory
 def processImages(img_dir, new_dir, dataset):
     numPic = 0
     for img_path in os.listdir(img_dir):
         numPic+=1
-        img = cv2.imread(os.path.join(img_dir, img_path), -1) #-1 is imread_unchanged
+        img = cv2.imread(os.path.join(img_dir, img_path), 0) #-1 is imread_unchanged
         #warning: even if image path is wrong, no error will be thrown
         if dataset == 'Radbound':
             resized = cv2.resize(squarePic(img), (48, 48), interpolation = cv2.INTER_AREA)
-            new_name = newName(img_path, numPic)
             #not sure what 3rd param does...
+            new_name = newName(img_path, numPic)
+            
 
         if dataset == 'JAFFE':
             resized= squarePicFaceDetected(img)
@@ -114,7 +117,7 @@ def processImages(img_dir, new_dir, dataset):
         #os.rename(img, newName(img_path, numPic)) #should this be img or img_path??
         cv2.imwrite(os.path.join(new_dir, new_name), resized)
         if numPic% 100 == 0:
-            print (str((numPic/8040.0)*100)+'%')
+            print str('%.2f' % ((numPic/8040.0)*100))+'%',
 
 def createCSV(name, categories, img_dir):
     with open(name, 'wb') as csvfile:
