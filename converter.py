@@ -4,7 +4,7 @@ import cv2
 import csv
 import face_detection as fd
 
-dataset = 'Radbound'
+dataset = 'CK+'
 path = os.getcwd()
 '''
 if dataset == 'Radbound':
@@ -17,6 +17,9 @@ if dataset == 'JAFFE':
 
 os.mkdir(newDir)
 '''
+
+if dataset == 'CK+':
+    newDir = 'CK+Converted'
 def squarePicFaceDetected(image):
     face_img = fd.crop_faces(image)
     resized = cv2.resize(face_img, (48, 48), interpolation = cv2.INTER_AREA)
@@ -138,6 +141,7 @@ def processCK():
             f = open(file_path, 'r')
             emotion_num = int(float(f.read().strip(' ')))
             new_name = newNameFromCK(emotion_num, img_num)
+            f.close()
 
             #Process image
             img = cv2.imread(img_file, cv2.IMREAD_GRAYSCALE)
@@ -170,7 +174,7 @@ def processImages(img_dir, new_dir, dataset):
         #    print str('%.2f' % ((numPic/8040.0)*100))+'%')
 
 def createCSV(name, categories, img_dir):
-    with open(name, 'wb') as csvfile:
+    with open(name, 'w') as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|',
                                 quoting=csv.QUOTE_MINIMAL)
         filewriter.writerow(categories)
@@ -179,6 +183,9 @@ def createCSV(name, categories, img_dir):
             img_pixels = ' '.join(map(str,img.flatten().tolist()))
             filewriter.writerow([emoNum(img_path), img_pixels])
 
-#processImages(oldDir, newDir, dataset)
-#createCSV(dataset + 'Converted.csv', ['emotion', 'pixels'], newDir)
-processCK()
+if dataset == 'CK+':
+    processCK()
+else:
+    processImages(oldDir, newDir, dataset)
+
+createCSV(dataset + 'Converted.csv', ['emotion', 'pixels'], newDir)
