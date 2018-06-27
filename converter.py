@@ -8,19 +8,16 @@ path = os.getcwd()
 oldDir = os.path.join(path, 'Research_Datasets\Radbound')
 newDir = os.path.join(path, 'RadboundConverted')
 
-'''
+
 #Testing face detection with JAFFE dataset
 oldDir = os.path.join(path, 'Research_Datasets\jaffe')
 newDir = os.path.join(path, 'JAFFEConverted')
-'''
+
 os.mkdir(newDir)
 
-#load cascade classifier training file for haarcascade
-#Either need to find or make model for side-face detection in generalized/Radbound datasets
-haar_face_cascade = cv2.CascadeClassifier('data/haarcascade_frontalface_default.xml')
 
 def squarePicFaceDetected(image):
-    face_img = fd.crop_faces(haar_face_cascade, image)
+    face_img = fd.crop_faces(image)
     resized = cv2.resize(face_img, (48, 48), interpolation = cv2.INTER_AREA)
     return resized
 
@@ -105,15 +102,15 @@ def processImages(img_dir, new_dir):
         img = cv2.imread(os.path.join(img_dir, img_path), -1) #-1 is imread_unchanged
         #warning: even if image path is wrong, no error will be thrown
 
-        resized = cv2.resize(squarePic(img), (48, 48), interpolation = cv2.INTER_AREA)
+        #resized = cv2.resize(squarePic(img), (48, 48), interpolation = cv2.INTER_AREA)
         #not sure what 3rd param does...
 
-        #resized= squarePicFaceDetected(img)
+        resized= squarePicFaceDetected(img)
 
         #os.rename(img, newName(img_path, numPic)) #should this be img or img_path??
-        new_name = newName(img_path, numPic)
+        #new_name = newName(img_path, numPic)
 
-        #new_name = newNameFromJaffe(img_path, numPic)
+        new_name = newNameFromJaffe(img_path, numPic)
 
         cv2.imwrite(os.path.join(new_dir, new_name), resized)
         if numPic% 100 == 0:

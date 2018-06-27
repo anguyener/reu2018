@@ -1,6 +1,11 @@
 import cv2
 
-def crop_faces(f_cascade, colored_img, scaleFactor = 1.1):
+def crop_faces(colored_img, scaleFactor = 1.1):
+
+    #load cascade classifier training file for haarcascade
+    #Either need to find or make model for side-face detection in generalized/Radbound datasets
+    haar_face_cascade = cv2.CascadeClassifier('data/haarcascade_frontalface_default.xml')
+
     #just making a copy of image passed, so that passed image is not changed 
     img_copy = colored_img.copy()
 
@@ -8,7 +13,7 @@ def crop_faces(f_cascade, colored_img, scaleFactor = 1.1):
     #gray = cv2.cvtColor(img_copy, cv2.COLOR_BGR2GRAY)
     gray = img_copy
     #let's detect multiscale (some images may be closer to camera than others) images
-    faces = f_cascade.detectMultiScale(gray, scaleFactor=scaleFactor, minNeighbors=5)
+    faces = haar_face_cascade.detectMultiScale(gray, scaleFactor=scaleFactor, minNeighbors=5)
 
     #go over list of faces and draw them as rectangles on original colored img
 
