@@ -1,4 +1,3 @@
-#from shutil import copytree
 import os
 import cv2
 import csv
@@ -6,14 +5,17 @@ import face_detection as fd
 
 dataset = 'CK+'
 path = os.getcwd()
+svpos = 'posed'
 '''
 if dataset == 'Radbound':
     oldDir = os.path.join(path, 'Research_Datasets\Radbound')
     newDir = os.path.join(path, 'RadboundConverted')
+    svpos = 'posed'
 
 if dataset == 'JAFFE':
     oldDir = os.path.join(path, 'Research_Datasets\jaffe')
     newDir = os.path.join(path, 'JAFFEConverted')
+    svpos = 'posed'
 
 os.mkdir(newDir)
 '''
@@ -173,7 +175,7 @@ def processImages(img_dir, new_dir, dataset):
         #if numPic% 100 == 0:
         #    print str('%.2f' % ((numPic/8040.0)*100))+'%')
 
-def createCSV(name, categories, img_dir):
+def createCSV(name, categories, img_dir, svpos):
     with open(name, 'w') as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|',
                                 quoting=csv.QUOTE_MINIMAL)
@@ -181,11 +183,12 @@ def createCSV(name, categories, img_dir):
         for img_path in os.listdir(img_dir):
             img = cv2.imread(os.path.join(img_dir, img_path), -1)
             img_pixels = ' '.join(map(str,img.flatten().tolist()))
-            filewriter.writerow([emoNum(img_path), img_pixels])
+            filewriter.writerow([emoNum(img_path), img_pixels, svpos])
+
 
 if dataset == 'CK+':
     processCK()
 else:
     processImages(oldDir, newDir, dataset)
 
-createCSV(dataset + 'Converted.csv', ['emotion', 'pixels'], newDir)
+createCSV(dataset + 'Converted.csv', ['emotion', 'pixels', 'svpos'], newDir, svpos)
