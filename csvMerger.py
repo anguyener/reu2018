@@ -36,13 +36,15 @@ with open(merged, 'wb') as fw:
                 r.append(param2[paramOrder.index(n)])
             writer.writerow(r)
             for r in reader1:
-                if not (r):
+                if not (r): 
                     continue
-                writer.writerow(r)
+                if int(r[0]) >= 0: #takes care of -1 for non-recognized emotions
+                    writer.writerow(r)
             for row in reader2:
                 if not (r):
                     continue
                 r = []
                 for n in range(len(paramOrder)):
                     r.append(row[paramOrder.index(n)])
-                writer.writerow(r)
+                if int(r[0]) >= 0:
+                    writer.writerow(r)
