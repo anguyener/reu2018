@@ -6,7 +6,7 @@ import face_detection as fd
 
 dataset = 'CK+'
 path = os.getcwd()
-'''
+
 if dataset == 'Radbound':
     oldDir = os.path.join(path, 'Research_Datasets\Radbound')
     newDir = os.path.join(path, 'RadboundConverted')
@@ -14,12 +14,11 @@ if dataset == 'Radbound':
 if dataset == 'JAFFE':
     oldDir = os.path.join(path, 'Research_Datasets\jaffe')
     newDir = os.path.join(path, 'JAFFEConverted')
-
-os.mkdir(newDir)
-'''
-
 if dataset == 'CK+':
     newDir = 'CK+Converted'
+'''
+os.mkdir(newDir)
+'''
 def squarePicFaceDetected(image):
     face_img = fd.crop_faces(image)
     resized = cv2.resize(face_img, (48, 48), interpolation = cv2.INTER_AREA)
@@ -122,9 +121,11 @@ def emoNum(name):
 
 def processCK():
     img_num = 0
+    subject_id = ''
     for root, dirs, files in os.walk('Research_Datasets\CK+\Emotion_labels\Emotion'):
         for file in files:
             img_num += 1
+
             #Isolate directory structure for emotion label
             file_path = os.path.join(root, file)
             dir_list = root.split(os.sep)
@@ -136,6 +137,21 @@ def processCK():
             (file_name, extension) = os.path.splitext(file)
             img_filename = file_name[:17] + '.png'
             img_file = os.path.join(img_path, img_filename)
+
+            cur_subject = file[:4]
+            if subject_id != cur_subject:
+                subject_id = cur_subject
+                img_filename_neutral = file_name[:9] + "00000001.png"
+                img_file_neutral = os.path.join(img_path, img_filename_neutral)
+                emotion_num = 0
+                new_name = newNameFromCK(0, img_num)
+
+                img = cv2.imread(img_file_neutral, cv2.IMREAD_GRAYSCALE)
+                face_crop = squarePicFaceDetected(img)
+                cv2.imwrite(os.path.join('CK+Converted', new_name), face_crop)
+                img_num += 1
+                print ('processed',subject_id, "neutral")
+
 
             #Get emotion label
             f = open(file_path, 'r')
@@ -156,22 +172,29 @@ def processImages(img_dir, new_dir, dataset):
     numPic = 0
     for img_path in os.listdir(img_dir):
         numPic+=1
-        img = cv2.imread(os.path.join(img_dir, img_path), 0) #-1 is imread_unchanged
+        #print ("processing image: " + os.path.join(img_dir, img_path))
+
         #warning: even if image path is wrong, no error will be thrown
-        if dataset == 'Radbound':
-            resized = cv2.resize(squarePic(img), (48, 48), interpolation = cv2.INTER_AREA)
+        if (numPic % 100 == 0):
+            print ("Processed", numPic,'images.')
+
+        if  (dataset=='Radbound') and ('Rafd090' in img_path):
+            if 'contempt' in img_path:
+                continue
+
+            img = cv2.imread(os.path.join(img_dir, img_path), 0) #-1 is imread_unchanged
+            #resized = cv2.resize(squarePic(img), (48, 48), interpolation = cv2.INTER_AREA)
+            resized= squarePicFaceDetected(img)
             #not sure what 3rd param does...
             new_name = newName(img_path, numPic)
+            cv2.imwrite(os.path.join(new_dir, new_name), resized)
 
 
         if dataset == 'JAFFE':
+            img = cv2.imread(os.path.join(img_dir, img_path), 0) #-1 is imread_unchanged
             resized= squarePicFaceDetected(img)
             new_name = newNameFromJaffe(img_path, numPic)
-
-        #os.rename(img, newName(img_path, numPic)) #should this be img or img_path??
-        cv2.imwrite(os.path.join(new_dir, new_name), resized)
-        #if numPic% 100 == 0:
-        #    print str('%.2f' % ((numPic/8040.0)*100))+'%')
+            cv2.imwrite(os.path.join(new_dir, new_name), resized)
 
 def createCSV(name, categories, img_dir):
     with open(name, 'w') as csvfile:
