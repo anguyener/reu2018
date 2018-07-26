@@ -3,7 +3,7 @@ import cv2
 import csv
 import face_detection as fd
 
-dataset = 'CK+'
+dataset = 'NVIE'
 path = os.getcwd()
 svpos = 'posed'
 '''
@@ -22,11 +22,15 @@ os.mkdir(newDir)
 
 if dataset == 'CK+':
     newDir = 'CK+Converted'
+
+if dataset == 'NVIE':
+    oldDir = os.path.join(path, 'Research_Datasets\\NVIE Database\\5_USTC-ApexVisibleSpontaneousExpressionFrame_AAM Points\\SelectedSamples')
+    newDir = 'NVIEConverted'
 '''
 os.mkdir(newDir)
 '''
-def squarePicFaceDetected(image):
-    face_img = fd.crop_faces(image)
+def squarePicFaceDetected(image, image_name):
+    face_img = fd.crop_faces(image, image_name)
     resized = cv2.resize(face_img, (48, 48), interpolation = cv2.INTER_AREA)
     return resized
 
@@ -41,6 +45,23 @@ def squarePic(image):
         cropped = image[difference:(height-difference), 0:width]
 
     return cropped
+def newNameFromNvie(name, number):
+    num = str(number)
+    if name[0] == '1': #hapiness
+        return 'img-'+num+'-3.png'
+    elif name[0] == '2': #disgust
+        return 'img-'+num+'-1.png'
+    elif name[0] == '3': #fear
+        return 'img-'+num+'-2.png'
+    elif name[0] == '4': #surprise
+        return 'img-'+num+'-5.png'
+    elif name[0] == '5': #anger
+        return 'img-'+num+'-0.png'
+    elif name[0] == '6': #sadness
+        return 'img-'+num+'-4.png'
+    else:
+        #what do we do if it's not one of the 6 basic emotions?
+        return 'skip-'+num+'.png'
 
 #makes new name for converted image with emotion as a number
 def newNameFromJaffe(name, number):
@@ -153,7 +174,7 @@ def processCK():
                 new_name = newNameFromCK(0, img_num)
 
                 img = cv2.imread(img_file_neutral, cv2.IMREAD_GRAYSCALE)
-                face_crop = squarePicFaceDetected(img)
+                face_crop = squarePicFaceDetected(img, file)
                 cv2.imwrite(os.path.join('CK+Converted', new_name), face_crop)
                 img_num += 1
                 print ('processed',subject_id, "neutral")
@@ -167,7 +188,7 @@ def processCK():
 
             #Process image
             img = cv2.imread(img_file, cv2.IMREAD_GRAYSCALE)
-            face_crop = squarePicFaceDetected(img)
+            face_crop = squarePicFaceDetected(img, file)
 
             cv2.imwrite(os.path.join('CK+Converted', new_name), face_crop)
             if img_num % 20 == 0:
@@ -176,6 +197,25 @@ def processCK():
 #crops images to equal width and height, resizes to 48x48 renames, puts in new directory
 def processImages(img_dir, new_dir, dataset):
     numPic = 0
+    #Process neutral images from posed dataset
+    if dataset == 'NVIE':
+        neutral_root = os.path.join(path, 'Research_Datasets\\NVIE Database\\0-PosedExpressionDatabase')
+        for root, dirs, files in os.walk(neutral_root):
+            for file in files:
+                dir_list = root.split(os.sep)
+
+                if len(dir_list) >= 12 and dir_list[10] == 'visible' and dir_list[11] == 'neutral':
+                    img_path = os.path.join(root, file)
+                    img = cv2.imread(os.path.join(img_dir, img_path), 0) #-1 is imread_unchanged
+                    resized= squarePicFaceDetected(img, img_path)
+                    new_name = 'img-'+ str(numPic)+'-6.png'
+                    cv2.imwrite(os.path.join(new_dir, new_name), resized)
+                    numPic += 1
+
+
+
+
+
     for img_path in os.listdir(img_dir):
         numPic+=1
         #print ("processing image: " + os.path.join(img_dir, img_path))
@@ -184,21 +224,26 @@ def processImages(img_dir, new_dir, dataset):
         if (numPic % 100 == 0):
             print ("Processed", numPic,'images.')
 
-        if  (dataset=='Radbound') and ('Rafd090' in img_path):
+        if (dataset=='Radbound') and ('Rafd090' in img_path):
             if 'contempt' in img_path:
                 continue
 
             img = cv2.imread(os.path.join(img_dir, img_path), 0) #-1 is imread_unchanged
             #resized = cv2.resize(squarePic(img), (48, 48), interpolation = cv2.INTER_AREA)
-            resized= squarePicFaceDetected(img)
+            resized= squarePicFaceDetected(img, img_path)
             #not sure what 3rd param does...
             new_name = newName(img_path, numPic)
             cv2.imwrite(os.path.join(new_dir, new_name), resized)
 
-
-        if dataset == 'JAFFE':
+        elif dataset == 'NVIE':
             img = cv2.imread(os.path.join(img_dir, img_path), 0) #-1 is imread_unchanged
-            resized= squarePicFaceDetected(img)
+            resized= squarePicFaceDetected(img, img_path)
+            new_name = newNameFromNvie(img_path, numPic)
+            cv2.imwrite(os.path.join(new_dir, new_name), resized)
+
+        else: # dataset == 'JAFFE':
+            img = cv2.imread(os.path.join(img_dir, img_path), 0) #-1 is imread_unchanged
+            resized= squarePicFaceDetected(img, img_path)
             new_name = newNameFromJaffe(img_path, numPic)
             cv2.imwrite(os.path.join(new_dir, new_name), resized)
 

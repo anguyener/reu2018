@@ -1,6 +1,6 @@
 import cv2
 
-def crop_faces(img, scaleFactor = 1.1):
+def crop_faces(img, img_name, scaleFactor = 1.1):
 
     #load cascade classifier training file for haarcascade
     #Either need to find or make model for side-face detection in generalized/Radbound datasets
@@ -8,7 +8,8 @@ def crop_faces(img, scaleFactor = 1.1):
 
     #let's detect multiscale (some images may be closer to camera than others) images
     faces = haar_face_cascade.detectMultiScale(img, scaleFactor=scaleFactor, minNeighbors=5)
-
+    if len(faces) == 0:
+        print("Did not detect face in image", img_name)
     for (x, y, w, h) in faces:
         s = max(w,h)
         #cv2.rectangle(img_copy, (x, y), (x+s, y+s), (0, 255, 0), 2)
