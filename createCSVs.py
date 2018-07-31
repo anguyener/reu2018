@@ -2,6 +2,10 @@ import os
 import cv2
 import csv
 
+##Takes dataset and makes two CSVs out of it:
+#####For whole-face emotion classification 1-6
+#####For spontaneous vs posed classification 0-1
+
 dataset_dir = os.path.join(os.getcwd(), 'Research_Datasets\\JAFFEConverted')
 
 def emoNum(name):
@@ -34,7 +38,6 @@ def svposNum(name):
 
 def emoCSV(img_dir):
     name = os.path.join(os.path.split(img_dir)[1]+'emo.csv')
-    print name
     with open(name, 'wb') as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|',
                                 quoting=csv.QUOTE_MINIMAL)
@@ -46,7 +49,6 @@ def emoCSV(img_dir):
 
 def svposCSV(img_dir):
     name = os.path.join(os.path.split(img_dir)[1]+'svpos.csv')
-    print name
     with open(name, 'wb') as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|',
                                 quoting=csv.QUOTE_MINIMAL)
