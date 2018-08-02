@@ -7,11 +7,7 @@ import random
 #####For whole-face emotion classification 1-6
 #####For spontaneous vs posed classification 0-1
 
-<<<<<<< HEAD
-dataset_dir = os.path.join(os.getcwd(), 'JAFFEConverted')
-=======
 dataset_dir = os.path.join(os.getcwd(), 'Research_Datasets\\compiledDataset')
->>>>>>> 92798704e0b5e9949ef622b2f46892d335ef2163
 
 def emoNum(name):
     if name.find('skip') > -1:
@@ -53,14 +49,9 @@ def emoCSV(img_dir):
     with open(name, 'wb') as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|',
                                 quoting=csv.QUOTE_MINIMAL)
-<<<<<<< HEAD
-        #filewriter.writerow(['emotion', 'pixels'])
-        for img_path in os.listdir(img_dir):
-=======
         filewriter.writerow(['emotion', 'pixels'])
         shuffled_dir = shuffle(img_dir)
         for img_path in shuffled_dir:
->>>>>>> 92798704e0b5e9949ef622b2f46892d335ef2163
             img = cv2.imread(os.path.join(img_dir, img_path), -1)
             img_pixels = ' '.join(map(str,img.flatten().tolist()))
             filewriter.writerow([emoNum(img_path), img_pixels])
