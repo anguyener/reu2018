@@ -9,13 +9,15 @@ SA = 0
 SU = 0
 NE = 0
 
-csv1 = '4Merged.csv'
+csv1 = 'NVIEConverted.csv'
 
-print csv1
+print(csv1)
 
 with open(csv1, 'rb') as fr:
+#with open(csv1, newline='') as fr: #python3
     reader1 = csv.reader(fr)
     param1 = reader1.next()
+    #next(reader1) #python3
     for row in reader1:
         if row[0] == '0':
             AN = AN+1
@@ -32,4 +34,4 @@ with open(csv1, 'rb') as fr:
         elif row[0] == '6':
             NE = NE+1
 
-print 'Angry: '+str(AN)+'\nDisgusted: '+str(DI)+'\nFearful: '+str(FE)+'\nHappy: '+str(HA)+'\nSad: '+str(SA)+'\nSurprised: '+str(SU)+'\nNeutral: '+str(NE)
+print('Angry: '+str(AN)+'\nDisgusted: '+str(DI)+'\nFearful: '+str(FE)+'\nHappy: '+str(HA)+'\nSad: '+str(SA)+'\nSurprised: '+str(SU)+'\nNeutral: '+str(NE))
