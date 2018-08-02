@@ -3,10 +3,10 @@ import cv2
 import csv
 import face_detection as fd
 
-dataset = 'NVIE'
+dataset = 'Radbound'
 path = os.getcwd()
 svpos = 'posed'
-'''
+
 if dataset == 'Radbound':
     oldDir = os.path.join(path, 'Research_Datasets\Radbound')
     newDir = os.path.join(path, 'RadboundConverted')
@@ -16,7 +16,7 @@ if dataset == 'JAFFE':
     oldDir = os.path.join(path, 'Research_Datasets\jaffe')
     newDir = os.path.join(path, 'JAFFEConverted')
     svpos = 'posed'
-
+'''
 os.mkdir(newDir)
 '''
 
@@ -216,39 +216,40 @@ def processImages(img_dir, new_dir, dataset):
 
 
 
-    for img_path in os.listdir(img_dir):
+    for img_name in os.listdir(img_dir):
         numPic+=1
-        #print ("processing image: " + os.path.join(img_dir, img_path))
+        #print ("processing image: " + img_name)
 
         #warning: even if image path is wrong, no error will be thrown
         if (numPic % 100 == 0):
             print ("Processed", numPic,'images.')
 
-        if (dataset=='Radbound') and ('Rafd090' in img_path):
-            if 'contempt' in img_path:
-                continue
+        if dataset=='Radbound':
+            if 'Rafd090' in img_name:
+                if 'contempt' in img_name:
+                    continue
 
-            img = cv2.imread(os.path.join(img_dir, img_path), 0) #-1 is imread_unchanged
-            #resized = cv2.resize(squarePic(img), (48, 48), interpolation = cv2.INTER_AREA)
-            resized= squarePicFaceDetected(img, img_path)
-            #not sure what 3rd param does...
-            new_name = newName(img_path, numPic)
-            cv2.imwrite(os.path.join(new_dir, new_name), resized)
+                img = cv2.imread(os.path.join(img_dir, img_name), 0) #-1 is imread_unchanged
+                #resized = cv2.resize(squarePic(img), (48, 48), interpolation = cv2.INTER_AREA)
+                resized= squarePicFaceDetected(img, img_name)
+                #not sure what 3rd param does...
+                new_name = newName(img_name, numPic)
+                cv2.imwrite(os.path.join(new_dir, new_name), resized)
 
         elif dataset == 'NVIE':
-            img = cv2.imread(os.path.join(img_dir, img_path), 0) #-1 is imread_unchanged
-            resized= squarePicFaceDetected(img, img_path)
-            new_name = newNameFromNvie(img_path, numPic)
+            img = cv2.imread(os.path.join(img_dir, img_name), 0) #-1 is imread_unchanged
+            resized= squarePicFaceDetected(img, img_name)
+            new_name = newNameFromNvie(img_name, numPic)
             cv2.imwrite(os.path.join(new_dir, new_name), resized)
 
         else: # dataset == 'JAFFE':
-            img = cv2.imread(os.path.join(img_dir, img_path), 0) #-1 is imread_unchanged
-            resized= squarePicFaceDetected(img, img_path)
-            new_name = newNameFromJaffe(img_path, numPic)
+            img = cv2.imread(os.path.join(img_dir, img_name), 0) #-1 is imread_unchanged
+            resized= squarePicFaceDetected(img, img_name)
+            new_name = newNameFromJaffe(img_name, numPic)
             cv2.imwrite(os.path.join(new_dir, new_name), resized)
 
 def createCSV(name, categories, img_dir, svpos):
-    with open(name, 'w') as csvfile:
+    with open(name, 'w', newline='') as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|',
                                 quoting=csv.QUOTE_MINIMAL)
         filewriter.writerow(categories)

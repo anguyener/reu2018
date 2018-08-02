@@ -6,7 +6,7 @@ import csv
 #####For whole-face emotion classification 1-6
 #####For spontaneous vs posed classification 0-1
 
-dataset_dir = os.path.join(os.getcwd(), 'Research_Datasets\\JAFFEConverted')
+dataset_dir = os.path.join(os.getcwd(), 'JAFFEConverted')
 
 def emoNum(name):
     if name.find('skip') > -1:
@@ -41,7 +41,7 @@ def emoCSV(img_dir):
     with open(name, 'wb') as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|',
                                 quoting=csv.QUOTE_MINIMAL)
-        filewriter.writerow(['emotion', 'pixels'])
+        #filewriter.writerow(['emotion', 'pixels'])
         for img_path in os.listdir(img_dir):
             img = cv2.imread(os.path.join(img_dir, img_path), -1)
             img_pixels = ' '.join(map(str,img.flatten().tolist()))
@@ -59,4 +59,4 @@ def svposCSV(img_dir):
             filewriter.writerow([svposNum(img_path), img_pixels])
 
 emoCSV(dataset_dir)
-svposCSV(dataset_dir)
+#svposCSV(dataset_dir)
