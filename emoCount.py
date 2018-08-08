@@ -9,15 +9,15 @@ SA = 0
 SU = 0
 NE = 0
 
-csv1 = 'NVIEConverted.csv'
+csv1 = 'RadboundConverted.csv'
 
 print(csv1)
 
-with open(csv1, 'rb') as fr:
-#with open(csv1, newline='') as fr: #python3
+#with open(csv1, 'rb') as fr:
+with open(csv1, newline='') as fr: #python3
     reader1 = csv.reader(fr)
-    param1 = reader1.next()
-    #next(reader1) #python3
+    #param1 = reader1.next()
+    next(reader1) #python3
     for row in reader1:
         if row[0] == '0':
             AN = AN+1

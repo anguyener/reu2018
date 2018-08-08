@@ -31,8 +31,7 @@ os.mkdir(newDir)
 '''
 def squarePicFaceDetected(image, image_name):
     face_img = fd.crop_faces(image, image_name)
-    resized = cv2.resize(face_img, (48, 48), interpolation = cv2.INTER_AREA)
-    return resized
+    return face_img
 
 #crops image to a square crops half the difference off wider axis
 def squarePic(image):

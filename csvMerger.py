@@ -49,6 +49,7 @@ def mergeCSVs(merged, csv1, csv2):
 
 def mergeAndShuffle(output, csvs):
     data = []
+    header = ['emotion', 'pixels', 'svpos']
     for csv_file in csvs:
         with open(csv_file, newline='') as fr:
             csv_reader = csv.reader(fr, delimiter=',', quotechar='|')
@@ -60,11 +61,13 @@ def mergeAndShuffle(output, csvs):
     shuffle(data)
     with open (output, 'w', newline='') as out:
         writer = csv.writer(out, delimiter=',', quotechar='|')
+        writer.writerow(header)
         for row in data:
             writer.writerow(row)
 
 
-csvs = ['RadboundConverted.csv', 'NVIEConverted.csv', 'JAFFEConverted.csv', 'CK+Converted.csv']
-output = 'Merged_RNJC.csv'
+#csvs = ['RadboundConverted.csv', 'NVIEConverted.csv', 'JAFFEConverted.csv', 'CK+Converted.csv', 'fer2013.csv']
+csvs = ['RadboundConverted.csv', 'CK+Converted.csv']
+output = 'Merged_RC.csv'
 mergeAndShuffle(output, csvs)
 #mergeCSVs('Merged.csv', 'CK+Converted.csv', 'RadboundConverted.csv')
