@@ -3,9 +3,8 @@ import cv2
 import csv
 import face_detection as fd
 
-dataset = 'Radbound'
+dataset = 'CK+'
 path = os.getcwd()
-svpos = 'posed'
 
 if dataset == 'Radbound':
     oldDir = os.path.join(path, 'Research_Datasets\Radbound')
@@ -247,7 +246,7 @@ def processImages(img_dir, new_dir, dataset):
             new_name = newNameFromJaffe(img_name, numPic)
             cv2.imwrite(os.path.join(new_dir, new_name), resized)
 
-def createCSV(name, categories, img_dir, svpos):
+def createCSV(name, categories, img_dir):
     with open(name, 'w', newline='') as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|',
                                 quoting=csv.QUOTE_MINIMAL)
@@ -255,7 +254,7 @@ def createCSV(name, categories, img_dir, svpos):
         for img_path in os.listdir(img_dir):
             img = cv2.imread(os.path.join(img_dir, img_path), -1)
             img_pixels = ' '.join(map(str,img.flatten().tolist()))
-            filewriter.writerow([emoNum(img_path), img_pixels, svpos])
+            filewriter.writerow([emoNum(img_path), img_pixels])
 
 
 if dataset == 'CK+':
@@ -263,4 +262,4 @@ if dataset == 'CK+':
 else:
     processImages(oldDir, newDir, dataset)
 
-createCSV(dataset + 'Converted.csv', ['emotion', 'pixels', 'svpos'], newDir, svpos)
+createCSV(dataset + 'Converted.csv', ['emotion', 'pixels'], newDir)

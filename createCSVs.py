@@ -7,7 +7,7 @@ import random
 #####For whole-face emotion classification 1-6
 #####For spontaneous vs posed classification 0-1
 
-dataset_dir = os.path.join(os.getcwd(), 'Research_Datasets\\compiledDataset')
+dataset_dir = os.path.join(os.getcwd(), 'CK+Converted')
 
 def emoNum(name):
     if name.find('skip') > -1:
@@ -40,7 +40,8 @@ def svposNum(name):
 def shuffle(img_dir):
     imgs = []
     for img_path in os.listdir(img_dir):
-        imgs.append(img_path)
+        if img_path.find('skip') == -1:
+           imgs.append(img_path)
     random.shuffle(imgs)
     return imgs
 
