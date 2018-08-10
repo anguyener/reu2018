@@ -67,7 +67,8 @@ def mergeAndShuffle(output, csvs):
 
 
 #csvs = ['RadboundConverted.csv', 'NVIEConverted.csv', 'JAFFEConverted.csv', 'CK+Converted.csv', 'fer2013.csv']
-csvs = ['RadboundConverted.csv', 'CK+Converted.csv']
-output = 'Merged_RC.csv'
+csvs = ['CK+top_left.csv', 'JAFFEtop_left.csv', 'NVIEtop_left.csv', 'Radboundtop_left.csv']
+#csvs = ['CK+bot_left.csv', 'JAFFEbot_left.csv', 'NVIEbot_left.csv', 'Radboundbot_left.csv']
+output = 'face_top_left_data.csv'
 mergeAndShuffle(output, csvs)
 #mergeCSVs('Merged.csv', 'CK+Converted.csv', 'RadboundConverted.csv')

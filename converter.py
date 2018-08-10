@@ -3,31 +3,6 @@ import cv2
 import csv
 import face_detection as fd
 
-dataset = 'CK+'
-path = os.getcwd()
-
-if dataset == 'Radbound':
-    oldDir = os.path.join(path, 'Research_Datasets\Radbound')
-    newDir = os.path.join(path, 'RadboundConverted')
-    svpos = 'posed'
-
-if dataset == 'JAFFE':
-    oldDir = os.path.join(path, 'Research_Datasets\jaffe')
-    newDir = os.path.join(path, 'JAFFEConverted')
-    svpos = 'posed'
-'''
-os.mkdir(newDir)
-'''
-
-if dataset == 'CK+':
-    newDir = 'CK+Converted'
-
-if dataset == 'NVIE':
-    oldDir = os.path.join(path, 'Research_Datasets\\NVIE Database\\5_USTC-ApexVisibleSpontaneousExpressionFrame_AAM Points\\SelectedSamples')
-    newDir = 'NVIEConverted'
-'''
-os.mkdir(newDir)
-'''
 def squarePicFaceDetected(image, image_name):
     face_img = fd.crop_faces(image, image_name)
     return face_img
@@ -196,6 +171,7 @@ def processCK():
 def processImages(img_dir, new_dir, dataset):
     numPic = 0
     #Process neutral images from posed dataset
+    '''
     if dataset == 'NVIE':
         neutral_root = os.path.join(path, 'Research_Datasets\\NVIE Database\\0-PosedExpressionDatabase')
         for root, dirs, files in os.walk(neutral_root):
@@ -209,7 +185,7 @@ def processImages(img_dir, new_dir, dataset):
                     new_name = 'img-'+ str(numPic)+'-6.png'
                     cv2.imwrite(os.path.join(new_dir, new_name), resized)
                     numPic += 1
-
+'''
 
 
 
@@ -217,7 +193,8 @@ def processImages(img_dir, new_dir, dataset):
     for img_name in os.listdir(img_dir):
         numPic+=1
         #print ("processing image: " + img_name)
-
+        if numPic < 948:
+            continue
         #warning: even if image path is wrong, no error will be thrown
         if (numPic % 100 == 0):
             print ("Processed", numPic,'images.')
@@ -256,10 +233,33 @@ def createCSV(name, categories, img_dir):
             img_pixels = ' '.join(map(str,img.flatten().tolist()))
             filewriter.writerow([emoNum(img_path), img_pixels])
 
+if __name__ == '__main__':
+    dataset = 'Radbound'
+    path = os.getcwd()
 
-if dataset == 'CK+':
-    processCK()
-else:
-    processImages(oldDir, newDir, dataset)
+    if dataset == 'Radbound':
+        oldDir = os.path.join(path, 'Research_Datasets\Radbound')
+        newDir = os.path.join(path, 'RadboundConverted')
+        svpos = 'posed'
 
-createCSV(dataset + 'Converted.csv', ['emotion', 'pixels'], newDir)
+    if dataset == 'JAFFE':
+        oldDir = os.path.join(path, 'Research_Datasets\jaffe')
+        newDir = os.path.join(path, 'JAFFEConverted')
+        svpos = 'posed'
+
+    if dataset == 'CK+':
+        newDir = 'CK+Converted'
+
+    if dataset == 'NVIE':
+        oldDir = os.path.join(path, 'Research_Datasets\\NVIE Database\\5_USTC-ApexVisibleSpontaneousExpressionFrame_AAM Points\\SelectedSamples')
+        newDir = 'NVIEConverted'
+    #os.mkdir(newDir)
+
+    if dataset == 'CK+':
+        processCK()
+    else:
+        processImages(oldDir, newDir, dataset)
+
+    createCSV(dataset + 'Converted.csv', ['emotion', 'pixels'], newDir)
+
+    #histogramEqualization('CK+Converted', 'Output')
